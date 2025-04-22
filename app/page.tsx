@@ -1,103 +1,114 @@
+'use client';
+import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const router = useRouter();
+  const [showTopButton, setShowTopButton] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowTopButton(window.scrollY > 300);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
+  return (
+    <main className="relative w-full text-gray-800 font-sans">
+
+      {/* Hero Section */}
+      <section className="relative h-screen w-full text-white overflow-hidden">
+        <Image
+          src="/Hero-Banner.png" // <-- Replace with your first cartoon pets background filename
+          alt="Pet adventure background"
+          layout="fill"
+          objectFit="cover"
+          quality={90}
+          priority
+          className="z-0"
+        />
+        <div className="absolute inset-0 bg-black/40 z-10" />
+
+        <div className="relative z-20 flex flex-col items-center justify-center h-full text-center px-6">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4 drop-shadow-lg">🐾 Welcome to Petventures</h1>
+          <p className="mb-8 text-lg sm:text-xl max-w-xl drop-shadow-md">
+            Turn your pet into the hero of their own AI-powered comic adventure.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button
+              onClick={() => router.push("/start-adventure")}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg text-lg shadow-md transition"
+            >
+              Start Adventure
+            </button>
+            <button
+              onClick={() => router.push("/create-pet")}
+              className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg text-lg shadow-md transition"
+            >
+              Create Your Pet
+            </button>
+            <button
+              onClick={() => router.push("/settings")}
+              className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-3 rounded-lg text-lg shadow-md transition"
+            >
+              Settings
+            </button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+      </section>
+
+      {/* Inspiration Section */}
+      <section className="relative w-full h-screen text-black text-center px-6 py-20">
+        <div className="absolute inset-0 bg-pink-100 z-10" />
+
+        <div className="relative z-20 max-w-2xl mx-auto flex flex-col justify-center h-full">
+          <h2 className="text-3xl font-bold mb-4">🌟 What Inspired This Project</h2>
+          <p className="text-lg">
+            Petventures was inspired by the love and imagination sparked by our own furry friends.
+            Combining storytelling with playful art and AI, this project brings pets to life in a way that’s heartwarming, surprising, and fun.
+          </p>
+        </div>
+      </section>
+
+
+
+      {/* About Developer Section */}
+      <section className="relative w-full h-screen text-white text-center px-6 py-20">
+        <Image
+          src="/Author-Hero.png"
+          alt="About the Developer background"
+          layout="fill"
+          objectFit="cover"
+          quality={90}
+          className="z-0"
+        />
+        <div className="absolute inset-0 bg-black/60 z-10" />
+
+        <div className="relative z-20 max-w-2xl mx-auto flex flex-col justify-center h-full">
+          <h2 className="text-3xl font-bold mb-4">👋 About the Developer</h2>
+          <p className="text-lg">
+            Hi! I'm Jason Tseng, a frontend engineer who loves building joyful, story-driven experiences.
+            This app began as a creative exploration with my dogs, and turned into a passion project blending
+            web tech, storytelling, and a bit of magic 🐶✨
+          </p>
+        </div>
+      </section>
+
+
+      {/* Back to Top Button */}
+      {showTopButton && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition z-50"
+          aria-label="Back to Top"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          ↑
+        </button>
+      )}
+    </main>
   );
 }

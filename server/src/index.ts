@@ -6,9 +6,16 @@ import { resolvers } from "./resolvers";;
 
 const PORT = process.env.PORT || 4000;
 
+
 async function startServer() {
   const app = express();
-  app.use(cors());
+  app.use(
+    cors({
+      origin: ["http://localhost:3000", "https://studio.apollographql.com"],
+      credentials: true,
+    })
+  );
+  
 
   const server = new ApolloServer({
     typeDefs,
