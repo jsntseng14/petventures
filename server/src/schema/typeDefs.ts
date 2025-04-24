@@ -1,7 +1,4 @@
-import { gql } from "apollo-server-express";
-
-console.log("✅ [Schema] Loaded updated StartStoryInput with adventureType etc.");
-
+import { gql } from 'apollo-server-express';
 
 export const typeDefs = gql`
   input StartStoryInput {
@@ -23,18 +20,19 @@ export const typeDefs = gql`
   }
 
   type StoryScene {
-    sceneText: String!
+    caption: String!
     imagePrompt: String!
     imageUrl: String!
     choices: [ChoiceOption!]!
   }
 
+
   type Mutation {
     startStory(input: StartStoryInput!): [StoryScene!]!
   }
+    
 
   type Query {
     healthCheck: String
   }
 `;
-

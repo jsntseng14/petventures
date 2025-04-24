@@ -41,13 +41,13 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4">
             <button
               onClick={() => router.push("/start-adventure")}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg text-lg shadow-md transition"
+              className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-lg text-lg shadow-md transition"
             >
               Start Adventure
             </button>
             <button
               onClick={() => router.push("/create-pet")}
-              className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg text-lg shadow-md transition"
+              className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-lg text-lg shadow-md transition"
             >
               Create Your Pet
             </button>
@@ -103,7 +103,7 @@ export default function Home() {
       {showTopButton && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition z-50"
+          className="fixed bottom-6 right-6 bg-pink-300 text-white p-3 rounded-full shadow-lg hover:bg-pink-500 transition z-50"
           aria-label="Back to Top"
         >
           ↑

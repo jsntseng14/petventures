@@ -1,26 +1,15 @@
 'use client';
 
-import { gql, useMutation } from "@apollo/client";
-import { useEffect, useState } from "react";
+import { gql, useMutation } from '@apollo/client';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { Home } from 'lucide-react';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-import Link from "next/link";
-import { Home } from "lucide-react";
-
-const App = () => {
-  return (
-    <DotLottieReact
-      src="path/to/animation.lottie"
-      loop
-      autoplay
-    />
-  );
-};
-
 
 const START_STORY = gql`
   mutation StartStory($input: StartStoryInput!) {
     startStory(input: $input) {
-      sceneText
+      caption
       imagePrompt
       imageUrl
       choices {
@@ -32,70 +21,64 @@ const START_STORY = gql`
 `;
 
 export default function StartAdventurePage() {
-  const [petName, setPetName] = useState("Milo");
-  const [imageUrl, setImageUrl] = useState("");
-  const [adventureType, setAdventureType] = useState("wholesome");
-  const [storyLength, setStoryLength] = useState("short");
-  const [customPrompt, setCustomPrompt] = useState("");
+  const [petName, setPetName] = useState('Milo');
+  const [imageUrl, setImageUrl] = useState('');
+  const [adventureType, setAdventureType] = useState('wholesome');
+  const [storyLength, setStoryLength] = useState('short');
+  const [customPrompt, setCustomPrompt] = useState('');
   const [sceneIndex, setSceneIndex] = useState(0);
   const [isStarted, setIsStarted] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
 
-  const [startStory, { data, loading, error }] = useMutation(START_STORY);
+  const [startStory, { data, loading, error }] = useMutation(START_STORY, {
+    onCompleted: (response) => {
+      setIsStarted(true);
+      setSceneIndex(0);
+      setIsComplete(false);
+    }    
+  });
+  
 
   useEffect(() => {
-    const savedName = localStorage.getItem("petName") ?? "Milo";
-    const savedImage = localStorage.getItem("imageUrl") ?? "https://placedog.net/500";
+    const savedName = localStorage.getItem('petName') ?? 'Milo';
+    const savedImage = localStorage.getItem('imageUrl') ?? 'https://placedog.net/500';
     setPetName(savedName);
     setImageUrl(savedImage);
   }, []);
 
   const handleStart = () => {
-    const uploadedImage = localStorage.getItem("imageUrl");
+    const uploadedImage = localStorage.getItem('imageUrl');
     const fallbackImage = `https://placedog.net/500?id=${Math.floor(Math.random() * 1000)}`;
 
     const input = {
       petName,
       imageUrl: uploadedImage || fallbackImage,
-      breed: localStorage.getItem("petBreed") ?? "",
-      size: localStorage.getItem("petSize") ?? "",
-      weight: localStorage.getItem("petWeight") ?? "",
-      age: localStorage.getItem("petAge") ?? "",
-      gender: localStorage.getItem("petGender") ?? "",
+      breed: localStorage.getItem('petBreed') ?? '',
+      size: localStorage.getItem('petSize') ?? '',
+      weight: localStorage.getItem('petWeight') ?? '',
+      age: localStorage.getItem('petAge') ?? '',
+      gender: localStorage.getItem('petGender') ?? '',
       adventureType,
       storyLength,
       customPrompt,
     };
 
     startStory({ variables: { input } });
-    setIsStarted(true);
-    setSceneIndex(0);
   };
 
   const handleChoice = () => {
-    if (sceneIndex < data.startStory.length - 1) {
+    if (sceneIndex < (data?.startStory?.length || 0) - 1) {
       setSceneIndex(sceneIndex + 1);
     } else {
-      alert("The adventure is complete! 🎉");
+      setIsComplete(true);
     }
   };
 
   const currentScene = data?.startStory?.[sceneIndex];
 
-  const getPromptSuggestion = (type: string) => {
-    switch (type) {
-      case "fantasy":
-        return "Your pet discovers a hidden dragon egg in the forest.";
-      case "mystery":
-        return "Your pet investigates a strange noise in the neighborhood.";
-      case "sci-fi":
-        return "Your pet stumbles into a wormhole in the backyard.";
-      case "spooky":
-        return "Your pet explores a haunted house on Halloween night.";
-      case "wholesome":
-      default:
-        return "Your pet has a picnic with their best animal friends.";
-    }
-  };
+  useEffect(() => {
+    console.log("🎯 currentScene:", currentScene);
+  }, [currentScene]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-100 to-pink-100 py-12 px-6 flex flex-col items-center">
@@ -105,9 +88,7 @@ export default function StartAdventurePage() {
         </button>
       </Link>
 
-      <h1 className="text-4xl font-extrabold text-pink-600 mb-8">
-        🐶 Start a New Petventure
-      </h1>
+      <h1 className="text-4xl font-extrabold text-pink-600 mb-8">🐶 Start a New Petventure</h1>
 
       <div className="max-w-xl w-full bg-white p-8 rounded-3xl shadow-xl space-y-6 relative">
         {!isStarted && (
@@ -158,20 +139,6 @@ export default function StartAdventurePage() {
                 placeholder="e.g., Milo finds a glowing bone buried in the backyard..."
                 className="w-full border border-gray-500 text-gray-800 placeholder-gray-500 px-4 py-3 rounded-lg shadow-sm focus:ring-2 focus:ring-pink-400 resize-none"
               />
-              {adventureType && (
-                <p className="text-xs text-gray-600 mt-1 italic">
-                  Try something like: {getPromptSuggestion(adventureType)}
-                </p>
-              )}
-            </div>
-
-            <div className="bg-pink-50 border border-pink-300 rounded-lg p-4 text-sm text-gray-800 shadow-sm">
-              <p><strong>Pet Name:</strong> {petName}</p>
-              <p><strong>Adventure Type:</strong> {adventureType}</p>
-              <p><strong>Story Length:</strong> {storyLength}</p>
-              {customPrompt && (
-                <p><strong>Custom Prompt:</strong> {customPrompt}</p>
-              )}
             </div>
 
             <button
@@ -183,44 +150,62 @@ export default function StartAdventurePage() {
           </>
         )}
 
-          {loading && (
-            <div className="fixed inset-0 z-50 bg-white/90 flex items-center justify-center">
-              <div className="flex flex-col items-center text-center">
-                <DotLottieReact
-                  src="/animations/dog-loader.lottie"
-                  loop
-                  autoplay
-                  style={{ width: 400, height: 400 }}
-                />
-                <p className="mt-6 text-pink-600 text-xl font-semibold animate-pulse">
-                  Crafting your pet’s legendary tale... 🐾✨
-                </p>
-              </div>
+        {loading && (
+          <div className="fixed inset-0 z-50 bg-white/90 flex items-center justify-center">
+            <div className="flex flex-col items-center text-center">
+              <DotLottieReact src="/animations/dog-loader.lottie" loop autoplay style={{ width: 400, height: 400 }} />
+              <p className="mt-6 text-pink-600 text-xl font-semibold animate-pulse">Crafting your pet’s legendary tale... 🐾✨</p>
             </div>
-          )}
-
+          </div>
+        )}
 
         {error && <p className="text-red-500 text-center">Something went wrong. Please try again.</p>}
 
-        {currentScene && (
-          <div className="space-y-4">
+        {!isComplete && currentScene && isStarted && (
+          <div className="space-y-6 text-center">
             <img
               src={currentScene.imageUrl}
-              alt={`Scene ${sceneIndex + 1}`}
-              className="w-full rounded-xl shadow-lg"
+              alt="Scene illustration"
+              className="w-full max-w-2xl rounded-xl mx-auto shadow-lg"
             />
-            <p className="font-medium text-gray-800">{currentScene.sceneText}</p>
+            <p className="text-lg text-gray-700 max-w-2xl mx-auto">{currentScene.caption}</p>
 
-            <div className="space-y-2">
+            <div className="space-y-4 mt-4 max-w-md mx-auto">
               {currentScene.choices.map((choice: any, index: number) => (
                 <button
                   key={index}
                   onClick={handleChoice}
-                  className="block w-full bg-pink-500 hover:bg-pink-600 transition text-white py-2 px-4 rounded-lg shadow"
+                  className="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 px-6 rounded-lg font-semibold shadow transition"
                 >
                   {choice.text}
                 </button>
               ))}
+            </div>
+          </div>
+        )}
+
+        {isComplete && (
+          <div className="text-center space-y-6">
+            <DotLottieReact className="py-2" src="/animations/alpaca-loader.lottie" loop autoplay style={{ width: 400, height: 400 }} />
+            <h2 className="text-2xl font-bold text-pink-600">Your adventure has ended! 🎉</h2>
+            <p className="text-gray-700">But every end is a new beginning...</p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4">
+              <button
+                onClick={() => {
+                  setIsStarted(false);
+                  setIsComplete(false);
+                  setCustomPrompt('');
+                }}
+                className="bg-pink-500 hover:bg-pink-600 text-white py-2 px-6 rounded-lg shadow"
+              >
+                Start New Adventure
+              </button>
+              <Link href="/" className="inline-block">
+                <button className="bg-white border border-pink-400 text-pink-600 hover:bg-pink-50 py-2 px-6 rounded-lg shadow">
+                  Return Home
+                </button>
+              </Link>
             </div>
           </div>
         )}
